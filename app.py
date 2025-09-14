@@ -25,6 +25,8 @@ def dashboard():
 
 # -------------------------------------------------------------- #
 
+# Consumo tempo real / Real ime consum
+
 @app.route("/data")
 def data():
     global last_rx, last_tx, last_time
@@ -32,7 +34,6 @@ def data():
     rx, tx = get_interface_stats()
     now = time.time()
 
-    # Inicia o gráfico ZERADO
     if last_rx == 0 and last_tx == 0:
         last_rx, last_tx, last_time = rx, tx, now
         return jsonify(download_mbps=0, upload_mbps=0)
@@ -40,14 +41,11 @@ def data():
     
     elapsed = now - last_time if last_time else 1
 
-    # Cálculo em Mbps
     download_mbps = ((rx - last_rx) * 8) / (elapsed * 1024 * 1024)
     upload_mbps   = ((tx - last_tx) * 8) / (elapsed * 1024 * 1024)
 
-    # Atualiza referências
     last_rx, last_tx, last_time = rx, tx, now
 
-    # Salva no banco
     save_to_db(round(download_mbps, 2), round(upload_mbps, 2))
 
     return jsonify(
@@ -57,18 +55,19 @@ def data():
 
 # -------------------------------------------------------------- #
 
+# Relatório de consumo por periodo / Consum report by period
+
 @app.route("/report_data")
 def report_data():
     start = request.args.get("start")
     end = request.args.get("end")
 
-    # garante que tenha segundos
-    if len(start) == 16:  # formato yyyy-mm-dd HH:MM
+    
+    if len(start) == 16:  
         start += ":00"
     if len(end) == 16:
         end += ":59"
 
-    # aqui você consulta o banco SQLite com base no período
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
     cursor.execute(
@@ -78,12 +77,13 @@ def report_data():
     rows = cursor.fetchall()
     conn.close()
 
-    # transforma em lista para mandar ao frontend
     data = [{"time": r[0], "rx": r[1], "tx": r[2]} for r in rows]
 
     return jsonify(data)
 
 # -------------------------------------------------------------- #
+
+# Dashboard Estatistico / Stat Dashboard 
 
 @app.route("/dashboard_data")
 def dashboard_data():
@@ -124,6 +124,8 @@ def dashboard_data():
     })
 
 # -------------------------------------------------------------- #
+
+# Historico Grafico
 
 @app.route("/dashboard_trend")
 def dashboard_trend():
