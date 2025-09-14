@@ -1,0 +1,30 @@
+
+/* Header */
+#pillNav2 .nav-link {
+  background-color: transparent;
+  transition: background-color 0.3s ease;
+}
+#pillNav2 .nav-link:hover {
+  background-color: #ffffff;
+  color: #000000;
+}
+#pillNav2 .nav-link.active {
+  background-color: none;
+  color: #ffffff;
+}
+#pillNav2 .nav-link.active:hover {
+  background-color: #ffffff;
+  color: #000000;
+}
+
+/* ----- ----- ----- */
+
+.bg-custom {
+  background-color: #fcfcfc; /* background color */
+}
+
+
+
+
+
+
